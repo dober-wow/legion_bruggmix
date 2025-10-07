@@ -1,0 +1,32 @@
+# /make-brief
+name: make-brief
+version: 0.1.0
+description: Compile a creative brief for ChatGPT from Legion Remix logs
+inputs:
+  - name: scope
+    description: "event ids (comma-separated) or 'all-recent'"
+    required: true
+run:
+  steps:
+    - collect:
+        from:
+          - ./characters/*.md
+          - ./events/**/*.md
+          - ./arcs/*.md
+        transforms:
+          - summarize:
+              target: "Canon Facts"
+              max_words: 300
+          - character_cards:
+              max_lines_per_card: 7
+          - recent_events:
+              limit: 3
+          - tone_board:
+              source: ./style/tone.md
+    - select:
+        when: "{{inputs.scope}} != 'all-recent'"
+        events: "{{inputs.scope}}"
+    - render:
+        to: ./briefs/latest_brief.md
+        template: ./templates/creative_brief.md
+    - copy_to_clipboard: ./briefs/latest_brief.md
