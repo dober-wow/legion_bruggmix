@@ -3,7 +3,7 @@ s
 # Auto Theme Demo
 
 This page demonstrates the per-document theme metadata that `md2html` now understands.
-
+s
 - A theme hint is supplied through the HTML comment at the very top of the file.
 - When you run the converter with `--theme auto`, the output for this document will use the **emerald-nightmare** palette.
 - Other documents can choose their own themes without passing new CLI flags.
