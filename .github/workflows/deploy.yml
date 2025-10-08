@@ -55,16 +55,6 @@ jobs:
           OUTPUT_DIR="$BUILD_ROOT/_site"
 
           mkdir -p "$OUTPUT_DIR"
-          # Determine input directory
-          BUILD_ROOT=$(pwd)
-          if [ -d "$BUILD_ROOT/repo/legion_bruggmix" ]; then
-            INPUT_DIR="$BUILD_ROOT/repo/legion_bruggmix"
-          else
-            INPUT_DIR="$BUILD_ROOT"
-          fi
-          OUTPUT_DIR="$BUILD_ROOT/_site"
-
-          mkdir -p "$OUTPUT_DIR"
 
           echo "Converting markdown in $INPUT_DIR with per-file themes..."
           python dober-md-html/md2html.py convert "$INPUT_DIR" \\
