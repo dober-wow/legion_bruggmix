@@ -1,3 +1,5 @@
+<!-- md2html-theme: emerald-nightmare -->
+
 # Legion Remix — Codex Pack
 
 This pack gives you a clean loop between your local **Legion Remix** logs and **ChatGPT** for creative writing.
