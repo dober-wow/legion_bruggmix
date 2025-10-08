@@ -41,7 +41,7 @@ jobs:
           echo "========================================="
 
           WORKSPACE=$(pwd)
-          SOURCE_DIR="$WORKSPACE/repo/legion_bruggmix"
+          SOURCE_DIR="$WORKSPACE"
           OUTPUT_DIR="$WORKSPACE/_site"
 
           if [ ! -d "$SOURCE_DIR" ]; then
