@@ -55,13 +55,15 @@ jobs:
           echo "Markdown files found:"
           find . -name "*.md" -type f | head -20
 
-          # Create output directory
+          # Determine input directory (prefer repo/legion_bruggmix when present)
           BUILD_ROOT=$(pwd)
-          INPUT_DIR="$BUILD_ROOT/repo/legion_bruggmix"
+          if [ -d "$BUILD_ROOT" ]; then
+            INPUT_DIR="$BUILD_ROOT"
+          else
+            INPUT_DIR="$BUILD_ROOT"
+          fi
           OUTPUT_DIR="$BUILD_ROOT/_site"
-
           mkdir -p "$OUTPUT_DIR"
-
           echo "Converting markdown in $INPUT_DIR with per-file themes..."
           python dober-md-html/md2html.py convert "$INPUT_DIR" \\
             --output "$OUTPUT_DIR" \
