@@ -1,3 +1,5 @@
+<!-- md2html-theme: manaforge -->
+
 ---
 name: Dober
 class: Warlock

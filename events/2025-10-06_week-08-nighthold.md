@@ -2,8 +2,13 @@
 id: events/week-08
 date: 2025-10-06
 title: Nighthold — Threads of Gul'dan
+md2html-theme: manaforge
 participants: [Shadobe, Dober, Kez, Panda]
-tags: [raid, remix, nighthold]
+tags:
+  - raid
+  - remix
+  - nighthold
+  - week-08
 thread_gains: +4
 ---
 ### Summary
