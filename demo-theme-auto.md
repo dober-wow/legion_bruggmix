@@ -1,5 +1,5 @@
 ﻿<!-- md2html-theme: emerald-nightmare -->
-
+s
 # Auto Theme Demo
 
 This page demonstrates the per-document theme metadata that `md2html` now understands.
