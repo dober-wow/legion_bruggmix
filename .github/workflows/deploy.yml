@@ -1,78 +1,78 @@
 ﻿name: Deploy Legion Bruggmix to GitHub Pages
+
 on:
-  # Runs on pushes to main branch
   push:
     branches: [main]
-  # Allows manual trigger from Actions tab
   workflow_dispatch:
-# Sets permissions of the GITHUB_TOKEN
+
 permissions:
   contents: read
   pages: write
   id-token: write
-# Allow one concurrent deployment
+
 concurrency:
   group: "pages"
   cancel-in-progress: true
+
 jobs:
-  # Build job
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+
       - name: Install MD2HTML from GitHub
         run: |
           python -m pip install --upgrade pip
-          # Clone the md2html repository
           git clone https://github.com/dober-wow/dober-md-html.git
-          # Install all required dependencies
           pip install click markdown beautifulsoup4 watchdog aiohttp
-          # Verify installation
           echo "Installed packages:"
           pip list | grep -E "click|markdown|beautifulsoup4|watchdog|aiohttp" || true
+
       - name: Convert Markdown files to HTML
         run: |
           echo "========================================="
           echo "Converting Legion Bruggmix markdown files..."
           echo "========================================="
-          # Show current directory structure
+
+          WORKSPACE=$(pwd)
+          SOURCE_DIR="$WORKSPACE/repo/legion_bruggmix"
+          OUTPUT_DIR="$WORKSPACE/_site"
+
+          if [ ! -d "$SOURCE_DIR" ]; then
+            echo "Expected source directory $SOURCE_DIR not found"
+            exit 1
+          fi
+
           echo "Current directory contents:"
           ls -la
-          echo "Markdown files found:"
-          find . -name "*.md" -type f | head -20
-          # Determine input directory
-          BUILD_ROOT=$(pwd)
-          if [ -d "$BUILD_ROOT/repo/legion_bruggmix" ]; then
-            INPUT_DIR="$BUILD_ROOT/repo/legion_bruggmix"
-          else
-            INPUT_DIR="$BUILD_ROOT"
-          fi
-          OUTPUT_DIR="$BUILD_ROOT/_site"
+          echo "Sample markdown files:"
+          find "$SOURCE_DIR" -name "*.md" -type f | head -20
 
           mkdir -p "$OUTPUT_DIR"
 
-          echo "Converting markdown in $INPUT_DIR with per-file themes..."
-          python dober-md-html/md2html.py convert "$INPUT_DIR" \\
+          echo "Converting markdown in $SOURCE_DIR with per-file themes..."
+          python dober-md-html/md2html.py convert "$SOURCE_DIR" \
             --output "$OUTPUT_DIR" \
             --theme auto \
             --recursive \
             --embed-images
+
           echo "========================================="
           echo "Conversion complete!"
           echo "========================================="
+
       - name: Create navigation index.html if needed
         run: |
-          # Check if index.html already exists from conversion
           if [ -f "_site/index.html" ]; then
             echo "index.html already exists from conversion, skipping creation"
           else
-            echo "No index.html found, creating navigation page..."
-            cat > _site/index.html << 'HTML'
+            cat > _site/index.html <<'HTML'
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -80,167 +80,96 @@ jobs:
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <title>Legion Bruggmix Chronicle</title>
               <style>
-                  * {
-                      margin: 0;
-                      padding: 0;
-                      box-sizing: border-box;
-                  }
                   body {
+                      margin: 0;
                       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                      background: #070b14;
-                      background: linear-gradient(135deg, #0c1528 0%, #1a2741 50%, #0c1528 100%);
-                      color: #e5e7eb;
+                      background: #0a0f1f;
+                      color: #f1f5f9;
                       min-height: 100vh;
                       display: flex;
-                      justify-content: center;
                       align-items: center;
+                      justify-content: center;
                       padding: 2rem;
                   }
                   .container {
-                      max-width: 900px;
+                      max-width: 960px;
                       width: 100%;
-                      background: rgba(17, 24, 39, 0.95);
-                      border-radius: 20px;
+                      background: rgba(15, 23, 42, 0.9);
+                      border-radius: 16px;
                       padding: 3rem;
-                      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7),
-                                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
-                      backdrop-filter: blur(10px);
-                      border: 1px solid rgba(96, 165, 250, 0.2);
+                      box-shadow: 0 30px 60px rgba(8, 47, 73, 0.45);
                   }
                   h1 {
-                      font-size: 3rem;
-                      background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%);
-                      -webkit-background-clip: text;
-                      -webkit-text-fill-color: transparent;
-                      background-clip: text;
-                      margin-bottom: 1rem;
-                      text-align: center;
+                      margin: 0 0 0.75rem;
+                      font-size: 2.8rem;
                       letter-spacing: -1px;
-                      font-weight: 800;
+                      color: #38bdf8;
                   }
-                  .subtitle {
-                      text-align: center;
-                      color: #9ca3af;
-                      margin-bottom: 3rem;
-                  }
-                  .nav-section {
-                      margin-bottom: 2rem;
-                  }
-                  .nav-section h2 {
-                      font-size: 1.4rem;
-                      margin-bottom: 1rem;
-                      color: #cbd5f5;
-                      text-transform: uppercase;
-                      letter-spacing: 0.2em;
-                      opacity: 0.8;
-                  }
-                  .nav-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                      gap: 1.5rem;
-                  }
-                  .nav-card {
-                      background: rgba(17, 25, 41, 0.85);
-                      border: 1px solid rgba(96, 165, 250, 0.15);
-                      border-radius: 16px;
-                      padding: 1.5rem;
-                      color: #e5e7eb;
-                      transition: all 0.3s ease;
-                      display: flex;
-                      flex-direction: column;
-                      align-items: flex-start;
+                  p.lead { margin: 0 0 2rem; color: #94a3b8; }
+                  section { margin-bottom: 2.5rem; }
+                  h2 { font-size: 1.25rem; text-transform: uppercase; color: #cbd5f5; letter-spacing: 0.2rem; margin-bottom: 1rem; }
+                  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.85rem; }
+                  li a {
+                      display: block;
+                      padding: 1rem 1.25rem;
+                      border-radius: 12px;
+                      background: rgba(30, 41, 59, 0.8);
+                      color: inherit;
                       text-decoration: none;
-                      gap: 0.5rem;
+                      transition: all 0.25s ease;
                   }
-                  .nav-card:hover {
-                      background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(129, 140, 248, 0.2));
-                      border-color: #60a5fa;
-                      transform: translateY(-5px);
-                      box-shadow: 0 10px 30px rgba(96, 165, 250, 0.3);
-                  }
-                  .nav-card .title {
-                      font-weight: 600;
-                      font-size: 1.1rem;
-                      color: #93c5fd;
-                  }
-                  .nav-card .description {
-                      font-size: 0.9rem;
-                      color: #9ca3af;
-                      margin-top: 0.5rem;
-                  }
-                  .footer {
-                      margin-top: 3rem;
-                      text-align: center;
-                      color: #6b7280;
-                      font-size: 0.9rem;
-                      border-top: 1px solid rgba(96, 165, 250, 0.2);
-                      padding-top: 2rem;
-                  }
-                  @media (max-width: 640px) {
-                      h1 {
-                          font-size: 2rem;
-                      }
-                      .container {
-                          padding: 2rem;
-                      }
-                  }
+                  li a:hover { background: rgba(56, 189, 248, 0.2); transform: translateY(-2px); }
+                  .footer { text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 3rem; }
               </style>
           </head>
           <body>
               <div class="container">
                   <h1>Legion Bruggmix Chronicle</h1>
-                  <div class="subtitle">An evolving adventure journal</div>
-                  <div class="nav-section">
+                  <p class="lead">A chronicle of the Legion's raids, operations, and briefings.</p>
+
+                  <section>
                       <h2>Main Lore</h2>
-                      <div class="nav-grid">
-                          <a href="characters.html" class="nav-card">
-                              <div class="title">Characters</div>
-                              <div class="description">Meet the legion</div>
-                          </a>
-                          <a href="arcs.html" class="nav-card">
-                              <div class="title">Story Arcs</div>
-                              <div class="description">Trace the campaign progress</div>
-                          </a>
-                      </div>
-                  </div>
-                  <div class="nav-section">
+                      <ul>
+                          <li><a href="characters.html">Characters</a></li>
+                          <li><a href="arcs.html">Story Arcs</a></li>
+                      </ul>
+                  </section>
+
+                  <section>
                       <h2>Weekly Briefings</h2>
-                      <div class="nav-grid">
-                          <a href="pages/week1/week1.html" class="nav-card">
-                              <div class="title">Week 1</div>
-                              <div class="description">Opening moves in Bruggmix</div>
-                          </a>
-                          <a href="pages/week2/week2.html" class="nav-card">
-                              <div class="title">Week 2</div>
-                              <div class="description">Escalation at the ridge</div>
-                          </a>
-                      </div>
-                  </div>
-                  <div class="footer">
-                      <p>Legion Bruggmix Chronicle © 2025</p>
-                      <p>Powered by <a href="https://github.com/dober-wow/dober-md-html" style="color: #60a5fa;">MD2HTML</a></p>
-                  </div>
+                      <ul>
+                          <li><a href="pages/week1/week1.html">Week 1</a></li>
+                          <li><a href="pages/week2/week2.html">Week 2</a></li>
+                      </ul>
+                  </section>
+
+                  <section>
+                      <h2>Samples & Utilities</h2>
+                      <ul>
+                          <li><a href="demo-theme-auto.html">Auto Theme Demo</a></li>
+                      </ul>
+                  </section>
+
+                  <div class="footer">Legion Bruggmix Chronicle © 2025 · Powered by MD2HTML</div>
               </div>
           </body>
           </html>
           HTML
-            echo "Navigation index.html created successfully!"
           fi
+
       - name: List generated files
         run: |
           echo "Generated files in _site/:"
-          if [ -d "_site" ]; then
-            find _site -type f -name "*.html" | head -20
-          else
-            echo "No _site directory found"
-          fi
+          find _site -type f -name "*.html" | head -20 || echo "No files found"
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './_site'
-  # Deployment job
+
   deploy:
     environment:
       name: github-pages
