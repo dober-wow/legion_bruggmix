@@ -57,11 +57,12 @@ jobs:
           mkdir -p "$OUTPUT_DIR"
 
           echo "Converting markdown in $SOURCE_DIR with per-file themes..."
-          python dober-md-html/md2html.py convert "$SOURCE_DIR" \
+          python dober-md-html/md2html.py convert \
             --output "$OUTPUT_DIR" \
             --theme auto \
             --recursive \
-            --embed-images
+            --embed-images \
+            "$SOURCE_DIR"
 
           echo "========================================="
           echo "Conversion complete!"
