@@ -26,13 +26,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install MD2HTML from GitHub
+      - name: Install MD2HTML
         run: |
           python -m pip install --upgrade pip
-          git clone https://github.com/dober-wow/dober-md-html.git
-          pip install click markdown beautifulsoup4 watchdog aiohttp
-          echo "Installed packages:"
-          pip list | grep -E "click|markdown|beautifulsoup4|watchdog|aiohttp" || true
+          pip install "git+https://github.com/dober-wow/dober-md-html.git"
+          echo "Installed md2html:"
+          pip show dober-md2html || true
 
       - name: Convert Markdown files to HTML
         run: |
@@ -57,7 +56,7 @@ jobs:
           mkdir -p "$OUTPUT_DIR"
 
           echo "Converting markdown in $SOURCE_DIR with per-file themes..."
-          python dober-md-html/md2html.py convert \
+          python -m md2html.cli convert \
             --output "$OUTPUT_DIR" \
             --theme auto \
             --recursive \
